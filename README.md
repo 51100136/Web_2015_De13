@@ -1,6 +1,10 @@
 # [SkyBox_API] (https://goo.gl/2Glazo)
 Đề 13: Ứng dụng upload và quản lý file trên Box.net và Sky Drive
 
+## Cài đặt để chạy thử source code
+* Cài đặt đường dẫn đến thư mục chứa source code: http://localhost/Assignment/SkyBox_PHP/
+* Thêm vào file host: 127.0.0.1 mytestingdomain.com
+
 ## Các chức năng
 ### BOX.NET
 * Đăng nhập sử dụng REST API kết hợp giao thức xác thực OAuth2.
