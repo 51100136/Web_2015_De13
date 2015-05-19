@@ -4,6 +4,7 @@
 ## Cài đặt để chạy thử source code
 * Cài đặt đường dẫn đến thư mục chứa source code: http://localhost/Assignment/SkyBox_PHP/
 * Thêm vào file host: 127.0.0.1 mytestingdomain.com
+* Xóa 2 file token.box và token.sky khi chạy lần đầu tiên
 
 ## Các chức năng
 ### BOX.NET
