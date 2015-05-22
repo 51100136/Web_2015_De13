@@ -7,18 +7,20 @@
 		public $access_token	= '';
 		public $refresh_token	= '';
 		public $state			= '';
+		public $filename		= '';
 		public $authorize_url 	= 'https://app.box.com/api/oauth2/authorize';
 		public $token_url	 	= 'https://api.box.com/oauth2/token';
 		public $api_url 		= 'https://api.box.com/2.0';
 		public $upload_url 		= 'https://upload.box.com/api/2.0';
 		public $revoke_url		= 'https://api.box.com/oauth2/revoke';
-		public function __construct($client_id = '', $client_secret = '', $redirect_uri = '') {
+		public function __construct($client_id = '', $client_secret = '', $redirect_uri = '', $username = '') {
 			if(empty($client_id) || empty($client_secret)) {
 				throw ('Invalid CLIENT_ID or CLIENT_SECRET or REDIRECT_URL. Please provide CLIENT_ID, CLIENT_SECRET and REDIRECT_URL when creating an instance of the class.');
 			} else {
 				$this->client_id 		= $client_id;
 				$this->client_secret	= $client_secret;
 				$this->redirect_uri		= $redirect_uri;
+				$this->filename 		= 'token/' . $username . '.box';
 			}
 		}
 
@@ -49,7 +51,6 @@
 			if(array_key_exists('refresh_token', $_REQUEST)) {
 				$this->refresh_token = $_REQUEST['refresh_token'];
 			} else {
-				// echo $url = $this->authorize_url . '?' . http_build_query(array('response_type' => 'code', 'client_id' => $this->client_id, 'redirect_uri' => $this->redirect_uri));
 				$url = $this->authorize_url . '?' . http_build_query(array('response_type' => 'code', 'client_id' => $this->client_id, 'redirect_uri' => $this->redirect_uri, 'state' => 'security_token/' . $state));
 				return $url;
 			}
@@ -237,7 +238,7 @@
 			} else {
 				$array['timestamp'] = time();
 				if($type == 'file'){
-					$fp = fopen('token.box', 'w');
+					$fp = fopen("$this->filename", 'w');
 					fwrite($fp, json_encode($array));
 					fclose($fp);
 				}
@@ -247,9 +248,9 @@
 		
 		/* Reads the token */
 		public function read_token($type = 'file', $json = false) {
-			if($type == 'file' && file_exists('token.box')){
-				$fp = fopen('token.box', 'r');
-				$content = fread($fp, filesize('token.box'));
+			if($type == 'file' && file_exists("$this->filename")){
+				$fp = fopen("$this->filename", 'r');
+				$content = fread($fp, filesize("$this->filename"));
 				fclose($fp);
 			} else {
 				return false;
@@ -289,8 +290,8 @@
 
 		/* Delete token when log out */
 		public function delete_token() {
-			if (file_exists('token.box')) {
-				unlink('token.box');
+			if (file_exists("$this->filename")) {
+				unlink("$this->filename");
 			}
 		}
 		

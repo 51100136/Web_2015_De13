@@ -6,6 +6,7 @@
 		public $redirect_uri	= '';
 		public $access_token	= '';
 		public $refresh_token	= '';
+		public $filename		= '';
 		public $scope			= 'wl.signin onedrive.readwrite onedrive.appfolder wl.skydrive ,wl.skydrive_update';
 		public $authorize_url 	= 'https://login.live.com/oauth20_authorize.srf';
 		public $token_url	 	= 'https://login.live.com/oauth20_token.srf';
@@ -14,13 +15,14 @@
 		public $user_url		= 'https://apis.live.net/v5.0/me';
 		public $root_folder_id	= '';
 		public $user_id			= '';
-		public function __construct($client_id = '', $client_secret = '', $redirect_uri = '') {
+		public function __construct($client_id = '', $client_secret = '', $redirect_uri = '', $username ='') {
 			if(empty($client_id) || empty($client_secret)) {
 				throw ('Invalid CLIENT_ID or CLIENT_SECRET or REDIRECT_URL. Please provide CLIENT_ID, CLIENT_SECRET and REDIRECT_URL when creating an instance of the class.');
 			} else {
 				$this->client_id 		= $client_id;
 				$this->client_secret	= $client_secret;
 				$this->redirect_uri		= $redirect_uri;
+				$this->filename 		= 'token/' . $username . '.sky';
 			}
 		}
 
@@ -144,7 +146,8 @@
 
 		public function upload_file($folder_id, $file_path) {
 			$file_name = basename($file_path);
-			$url = $this->build_url($this->api_url, "/$folder_id/files/$file_name");
+			$final_name = urlencode($file_name);
+			$url = $this->build_url($this->api_url, "/$folder_id/files/$final_name");
 			$result = $this->put_file($url, $file_path);
 			$data = json_decode($result, true);
 			
@@ -162,7 +165,7 @@
 			} else {
 				$array['timestamp'] = time();
 				if($type == 'file'){
-					$fp = fopen('token.sky', 'w');
+					$fp = fopen("$this->filename", 'w');
 					fwrite($fp, json_encode($array));
 					fclose($fp);
 				}
@@ -172,9 +175,9 @@
 		
 		/* Reads the token */
 		public function read_token($type = 'file', $json = false) {
-			if($type == 'file' && file_exists('token.sky')){
-				$fp = fopen('token.sky', 'r');
-				$content = fread($fp, filesize('token.sky'));
+			if($type == 'file' && file_exists("$this->filename")){
+				$fp = fopen("$this->filename", 'r');
+				$content = fread($fp, filesize("$this->filename"));
 				fclose($fp);
 			} else {
 				return false;
@@ -214,8 +217,8 @@
 
 		/* Delete token when log out */
 		public function delete_token() {
-			if (file_exists('token.sky')) {
-				unlink('token.sky');
+			if (file_exists("$this->filename")) {
+				unlink("$this->filename");
 			}
 		}
 
