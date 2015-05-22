@@ -20,7 +20,7 @@ function loginClick(loginUrl){
 }
 
 // AJAX LOG OUT
-function ajax_logout(redirectURL) {
+function ajax_logout_sky(redirectURL) {
 	$.ajax({
 		url : 'ajax.php',
 		type : 'post',
@@ -136,6 +136,7 @@ function ajax_upload_sky(filename, folderid)
 			if (result) {
 				var r = window.alert(result + '\n' + "Press OK to return");
 			}
+			$('#table-load-sky').html("");
 			ajax_load_sky(folderid);
 		}
 	});	
@@ -146,8 +147,6 @@ function call_upload_sky() {
 		var filename = fn.replace(/^C:\\fakepath\\/, "");
 		var fullfn = 'C:\\Upload\\' + filename;
 		var fi = $('#cur_folder_id_sky').val();
-		window.alert(fullfn);
-		window.alert(fi);
 		ajax_upload_sky(fullfn, fi);
 	}
 }

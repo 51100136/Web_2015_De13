@@ -105,6 +105,7 @@ function ajax_upload_box(filename, folderid)
 			if (result) {
 				var r = window.alert(result + '\n' + "Press OK to return");
 			}
+			$('#table-load-box').html("");
 			ajax_load_box(folderid);
 		}
 	});	
