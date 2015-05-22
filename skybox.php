@@ -22,6 +22,7 @@
 	     url('fonts/glyphicons-halflings-regular.ttf') format('truetype'), 
 	     url('fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg'); } 
 	</style>
+	<link rel="stylesheet" href="style-skybox.css">
 	<script src="http://code.jquery.com/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
@@ -92,32 +93,28 @@
 				if (!empty($box->access_token)) {
 					echo "<input type='hidden' value = \"$redirect_uri\" id='getRedirectURI'>";
 					echo "
-						<h3>Welcome back</h3>
-						<br>
-						$user_info_box->name
+							<h3 class='text-center'>Welcome back</h3>
+							<p class='text-center'>$user_info_box->name</p>
+												
 					";
 					echo "
-						<input type='button' class='btn btn-xs btn-danger' value='LOG OUT' onclick=\"ajax_logout_box('$redirect_uri')\">
+						<input type='button' class='btn btn-xs btn-danger center-block' value='LOG OUT' onclick=\"ajax_logout_box('$redirect_uri')\">
 					";
-					echo "<br>";
 					echo "
-						<img src='http://www.pomerleau.ca/medias/communs/exn_logo_box.png'>
+						<img class='center-block' src='images/box_btn.png'>
 					";
-					echo "<br>";
-					echo "
-						<input type='button' class='btn btn-xs btn-info' value='New Folder' data-toggle='modal' data-target='#create_folder_modal_box'>
-					";
-					echo "<br>";
-					echo "<br>";
 					echo "
 						<input type='file' name='upload_box' id='upload_box' onchange='getFileName(this)'>
-					";
 
+					";
 					echo "
 						<input type='button' class='btn btn-xs btn-info' value='Upload' onclick=\"call_upload_box()\">
 					";
 					echo "<br>";
 					echo "<br>";
+					echo "
+						<button type='button' class='btn btn-xs btn-info' data-toggle='modal' data-target='#create_folder_modal_box'>New Folder	</button>
+					";
 				}
 				else {
 					$login_url_php_box = $box->getLoginUrl();
@@ -148,25 +145,16 @@
 					echo "<input type='hidden' name='root_folder_id_sky' value=\"$root_folder_id_sky\" id='root_folder_id_sky'>";
 					echo "
 						<div class='center-block'>
-							<h3>Welcome back</h3>
-							<br>
-							$username_sky
+							<h3 class='text-center'>Welcome back</h3>
+							<p class='text-center'>$username_sky</p>
 						</div>
 					";
 					echo "
-						<input type='button' class='btn btn-xs btn-danger' value='LOG OUT' onclick=\"ajax_logout_sky('$redirect_uri')\">
+						<input type='button' class='btn btn-xs btn-danger center-block' value='LOG OUT' onclick=\"ajax_logout_sky('$redirect_uri')\">
 					";
-					echo "<br>";
 					echo "
-						<img src='https://blog.onedrive.com/wp-content/uploads/2014/01/OneDrive-Logo-300x94.png'>
+						<img class='center-block' src='images/onedrive_btn.png'>
 					";
-					echo "<br>";
-					echo "<br>";
-					echo "
-						<input type='button' class='btn btn-xs btn-info' value='New Folder' data-toggle='modal' data-target='#create_folder_modal_sky'>
-					";
-					echo "<br>";
-					echo "<br>";
 					echo "
 						<input type='file' name='upload_sky' id='upload_sky' onchange='getFileName(this)'>
 					";
@@ -176,6 +164,9 @@
 					";
 					echo "<br>";
 					echo "<br>";
+					echo "
+						<button type='button' class='btn btn-xs btn-info' data-toggle='modal' data-target='#create_folder_modal_sky'>New Folder</button>
+					";
 				} 
 				else {
 					echo "
