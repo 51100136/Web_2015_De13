@@ -1,18 +1,32 @@
 <?php 
+	session_start();
+	if (!isset($_SESSION['username'])) {
+		header("location: index.php");
+		exit();
+	}
+	else $username = $_SESSION['username'];
+
 	include('library/BoxAPI.class.php');
-	include_once("library/SkyAPI.class.php");
+	include("library/SkyAPI.class.php");
 
 	$client_id_box	= '6155u7ay8qv0euj1bo4hlsj06q9oizo3';
 	$client_secret_box 	= 'wBnq9CGFtoZ6BaqJ9cmsbAHZDTK4wOug';
 	$client_id_sky	= '0000000040154D32';
 	$client_secret_sky 	= '9SK1rJpxjAWsg1V38jGnD2o2HVzSCXgm';
-	$redirect_uri 	= 'http://localhost/Assignment/SkyBox_PHP/';
+	$redirect_uri 	= 'http://localhost/Assignment/SkyBox_PHP/skybox.php';
 
-	$box = new Box_API($client_id_box, $client_secret_box, $redirect_uri);
-	$sky = new Sky_API($client_id_sky, $client_secret_sky, $redirect_uri);
+	$box = new Box_API($client_id_box, $client_secret_box, $redirect_uri, $username);
+	$sky = new Sky_API($client_id_sky, $client_secret_sky, $redirect_uri, $username);
 
 	$token_box = $box->load_token();
 	$token_sky = $sky->load_token();
+
+	if (isset($_POST['logout_user'])) {
+		session_destroy();
+		echo "Successful";
+		$box->delete_token();
+		$sky->delete_token();
+	}
 
 	################################################### AJAX BOX ########################################################
 	// AJAX LOGOUT
@@ -221,7 +235,7 @@
 		$folderid = $_POST['id_sky'];
 		$folder_items = $sky->get_folder_items($folderid);
 		$count_items = count($folder_items['data']);
-		if ($count_items > 0) {
+		if ($count_items >= 0) {
 			echo "
 			<input type='hidden' name='cur_folder_id_sky' value=\"$folderid\" id='cur_folder_id_sky'>
 			<table class='table table-striped table-bordered' cellspacing='0' width='100%'>
@@ -235,108 +249,106 @@
 				<!-- Body -->
 				<tbody>
 				";
-			if ($count_items > 0) {
-				foreach ($folder_items['data'] as $key) {
-					if ($key['type'] == 'folder') {
-						$name = $key['name'];
-						$id = $key['id'];
-						$link = $key['link'];
-						$description = $key['description'];
-						$owner = $key['from']['name'];
-						$day = $key['created_time'];
-						$size = $key['size'] . ' Bytes';
+			foreach ($folder_items['data'] as $key) {
+				if ($key['type'] == 'folder') {
+					$name = $key['name'];
+					$id = $key['id'];
+					$link = $key['link'];
+					$description = $key['description'];
+					$owner = $key['from']['name'];
+					$day = $key['created_time'];
+					$size = $key['size'] . ' Bytes';
 
-						if ($description == NULL) $description = "No description";
+					if ($description == NULL) $description = "No description";
 
-						// Get parent folder
-						echo "
-						<tr>
-							<td class='col-md-1'>Folder</td>
-							<td class='col-md-4'>$name</td>
-							<td class='col-md-7'>
-								<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
-								<input type='button' class='folder_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#folder_delete_modal_sky' data-id=\"$id\">
-								<input type='button' class='btn btn-xs btn-success' value='Go to....' onclick=\"ajax_load_sky('$id')\">
-								<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
-							</td>
-						</tr>	
-						";
-					}
-					else if ($key['type'] == 'album') {
-						$name = $key['name'];
-						$id = $key['id'];
-						$link = $key['link'];
-						$description = $key['description'];
-						$owner = $key['from']['name'];
-						$day = $key['created_time'];
-						$size = $key['size'] . ' Bytes';
+					// Get parent folder
+					echo "
+					<tr>
+						<td class='col-md-1'>Folder</td>
+						<td class='col-md-4'>$name</td>
+						<td class='col-md-7'>
+							<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
+							<input type='button' class='folder_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#folder_delete_modal_sky' data-id=\"$id\">
+							<input type='button' class='btn btn-xs btn-success' value='Go to....' onclick=\"ajax_load_sky('$id')\">
+							<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
+						</td>
+					</tr>	
+					";
+				}
+				else if ($key['type'] == 'album') {
+					$name = $key['name'];
+					$id = $key['id'];
+					$link = $key['link'];
+					$description = $key['description'];
+					$owner = $key['from']['name'];
+					$day = $key['created_time'];
+					$size = $key['size'] . ' Bytes';
 
-						if ($description == NULL) $description = "No description";
+					if ($description == NULL) $description = "No description";
 
-						// Get parent folder
-						echo "
-						<tr>
-							<td class='col-md-1'>Folder</td>
-							<td class='col-md-4'>$name</td>							
-							<td class='col-md-7'>
-								<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
-								<input type='button' class='folder_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#folder_delete_modal_sky' data-id=\"$id\">
-								<input type='button' class='btn btn-xs btn-success' value='Go to....' onclick=\"ajax_load_sky('$id')\">
-								<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
-							</td>
-						</tr>	
-						";
-					}
-					else if ($key['type'] == 'file') {
-						$name = $key['name'];
-						$id = $key['id'];
-						$link = $key['link'];
-						$source = $key['source'];
-						$description = $key['description'];
-						$owner = $key['from']['name'];
-						$day = $key['created_time'];
-						$size = $key['size'] . ' Bytes';
+					// Get parent folder
+					echo "
+					<tr>
+						<td class='col-md-1'>Folder</td>
+						<td class='col-md-4'>$name</td>							
+						<td class='col-md-7'>
+							<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
+							<input type='button' class='folder_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#folder_delete_modal_sky' data-id=\"$id\">
+							<input type='button' class='btn btn-xs btn-success' value='Go to....' onclick=\"ajax_load_sky('$id')\">
+							<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
+						</td>
+					</tr>	
+					";
+				}
+				else if ($key['type'] == 'file') {
+					$name = $key['name'];
+					$id = $key['id'];
+					$link = $key['link'];
+					$source = $key['source'];
+					$description = $key['description'];
+					$owner = $key['from']['name'];
+					$day = $key['created_time'];
+					$size = $key['size'] . ' Bytes';
 
-						if ($description == "") $description = "No discription";
+					if ($description == "") $description = "No discription";
 
-						echo "
-						<tr>
-							<td class='col-md-1'>File</td>
-							<td class='col-md-4'>$name</td>						
-							<td class='col-md-7'>
-								<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
-								<input type='button' class='file_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#file_delete_modal_sky' data-id=\"$id\">
-								<input type='button' class='btn btn-xs btn-warning' value='DOWNLOAD' onclick=\"call_download_sky('$source')\">
-								<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
-							</td>
-						</tr>
-						";							
-					}
-					else if ($key['type'] == 'photo') {
-						$name = $key['name'];
-						$id = $key['id'];
-						$link = $key['link'];
-						$source = $key['source'];
-						$description = $key['description'];
-						$owner = $key['from']['name'];
-						$day = $key['created_time'];
-						$size = $key['size'] . ' Bytes';
+					echo "
+					<tr>
+						<td class='col-md-1'>File</td>
+						<td class='col-md-4'>$name</td>						
+						<td class='col-md-7'>
+							<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
+							<input type='button' class='file_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#file_delete_modal_sky' data-id=\"$id\">
+							<input type='button' class='btn btn-xs btn-warning' value='DOWNLOAD' onclick=\"call_download_sky('$source')\">
+							<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
+						</td>
+					</tr>
+					";							
+				}
+				else if ($key['type'] == 'photo') {
+					$name = $key['name'];
+					$id = $key['id'];
+					$link = $key['link'];
+					$source = $key['source'];
+					$description = $key['description'];
+					$owner = $key['from']['name'];
+					$day = $key['created_time'];
+					$size = $key['size'] . ' Bytes';
 
-						if ($description == "") $description = "No discription";
+					if ($description == "") $description = "No discription";
 
-						echo "
-						<tr>
-							<td class='col-md-1'>File</td>
-							<td class='col-md-4'>$name</td>						
-							<td class='col-md-7'>
-								<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
-								<input type='button' class='file_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#file_delete_modal_sky' data-id=\"$id\">
-								<input type='button' class='btn btn-xs btn-warning' value='DOWNLOAD' onclick=\"call_download_sky('$source')\">
-								<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
-							</td>
-						</tr>
-						";							
-					}
+					echo "
+					<tr>
+						<td class='col-md-1'>File</td>
+						<td class='col-md-4'>$name</td>						
+						<td class='col-md-7'>
+							<input type='button' class='folder_info_put_box btn btn-xs btn-info' value='DETAIL' data-toggle='modal' data-target='#folder_info_modal_box' data-name=\"$name\" data-description=\"$description\" data-owner=\"$owner\" data-day=\"$day\" data-size=\"$size\">
+							<input type='button' class='file_delete_put_sky btn btn-xs btn-danger' value='DELETE' data-toggle='modal' data-target='#file_delete_modal_sky' data-id=\"$id\">
+							<input type='button' class='btn btn-xs btn-warning' value='DOWNLOAD' onclick=\"call_download_sky('$source')\">
+							<input type='button' class='get_link_put_sky btn btn-xs btn-link' value='Shared' data-toggle='modal' data-target='#get_link_modal_sky' data-id=\"$link\">
+						</td>
+					</tr>
+					";							
 				}
 			}
 			echo"
