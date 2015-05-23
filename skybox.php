@@ -77,7 +77,7 @@
 			          	<ul class="dropdown-menu" role="menu">
 				            <li><a href="#">Account Overiew</a></li>
 				            <li class="divider"></li>
-				            <li><a href="#" onclick="log_out_user(); return false; 	">Log Out</a></li>
+				            <li><a href="#" onclick="log_out_user(); return false; ">Log Out</a></li>
 			          	</ul>
 			        </li>
 		      	</ul>
@@ -120,7 +120,7 @@
 					$login_url_php_box = $box->getLoginUrl();
 					echo "
 						<button type='button' class='btn btn-xs btn-default center-block' onclick=\"loginClick('$login_url_php_box')\">
-							<img src='images/box_icon.png'> One Drive
+							<img src='images/box_icon.png'> Box NET
 						</button>
 					";
 

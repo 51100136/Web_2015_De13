@@ -7,7 +7,7 @@
 		public $access_token	= '';
 		public $refresh_token	= '';
 		public $filename		= '';
-		public $scope			= 'wl.signin onedrive.readwrite onedrive.appfolder wl.skydrive ,wl.skydrive_update';
+		public $scope			= 'wl.signin wl.skydrive ,wl.skydrive_update';
 		public $authorize_url 	= 'https://login.live.com/oauth20_authorize.srf';
 		public $token_url	 	= 'https://login.live.com/oauth20_token.srf';
 		public $api_url 		= 'https://apis.live.net/v5.0';

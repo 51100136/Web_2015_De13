@@ -7,3 +7,7 @@ body {
 .center-block {
 	float:none;
 }
+
+.glyphicon.glyphicon-level-up {
+    font-size: 16px;
+}

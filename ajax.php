@@ -202,7 +202,7 @@
 			if ($result['error']['code'] = 'resource_not_found') echo "Folder doesn't exist!";
 			else echo "Unknown Error";
 		}
-		else echo "Successful!";
+		else echo "This file has been deleted";
 	}
 
 	// DELETE FILE
